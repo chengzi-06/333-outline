@@ -66,6 +66,31 @@ body{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px));}
 .it.peek .tx{filter:none;opacity:1;}
 .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:40px 10px;}
 
+#hb{position:fixed;inset:0;z-index:65;background:var(--paper);display:flex;flex-direction:column;}
+#hb[hidden]{display:none;}
+#hb .hb-bar{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;
+  border-bottom:1px solid var(--line);}
+#hb .hb-title{font-weight:800;color:var(--green);font-size:15px;flex:1;}
+#hbBody{flex:1;overflow:auto;padding:12px 12px calc(40px + env(safe-area-inset-bottom,0px));}
+.hb-fr{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;}
+.hb-fr h4{margin:0 0 8px;font-size:13px;color:var(--green);letter-spacing:1px;}
+.hb-fr .row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13.5px;color:var(--ink2);}
+.hb-fr .row b{color:var(--gold);width:16px;}
+.hb-fr .row i{font-style:normal;margin-left:auto;color:var(--muted);font-size:11.5px;}
+.hb-rule{font-size:12.5px;color:var(--ink2);line-height:1.75;padding:3px 0 3px 16px;position:relative;}
+.hb-rule::before{content:'·';position:absolute;left:6px;color:var(--gold);}
+.hb-g{margin:16px 0 6px;font-size:12px;color:var(--muted);letter-spacing:2px;}
+.hb-item{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.hb-item>.h{display:flex;align-items:center;gap:8px;padding:13px 12px;font-weight:800;font-size:14.5px;color:var(--green);}
+.hb-item>.h .ar{margin-left:auto;color:var(--muted);font-size:12px;transition:transform .18s;}
+.hb-item.open>.h .ar{transform:rotate(90deg);}
+.hb-item>.b{display:none;border-top:1px solid #EEF1ED;}
+.hb-item.open>.b{display:block;}
+.hb-sec{padding:11px 14px;border-top:1px solid #F3F5F1;font-size:14px;line-height:1.8;color:var(--ink2);}
+.hb-sec:first-child{border-top:0;}
+.hb-sec .lb{display:block;font-size:11.5px;color:var(--gold);letter-spacing:1px;margin-bottom:4px;font-weight:700;}
+.hb-kws{padding:10px 14px 14px;display:flex;flex-wrap:wrap;gap:6px;}
+.hb-kws span{font-size:11.5px;color:var(--green);background:#EEF4E6;border:1px solid #DDE8CF;border-radius:7px;padding:2px 7px;}
 #sheet{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;
   padding-top:calc(8px + env(safe-area-inset-top,0px));}
 #sheet[hidden]{display:none;}
@@ -96,11 +121,20 @@ body{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px));}
     <button class="btn" id="btnExpand">展开全部</button>
     <button class="btn" id="btnCollapse">收起全部</button>
     <button class="btn" id="btnSheet">答题卡</button>
+    <button class="btn" id="btnHB">话术</button>
     <span class="stat">掌握 <b id="pg">0</b>/<span id="pgAll">0</span></span>
   </div>
 </div>
 
 <div id="list"></div>
+
+<div id="hb" hidden>
+  <div class="hb-bar">
+    <span class="hb-title">中外教育史 · 应急话术</span>
+    <button class="btn" id="hbClose">关闭</button>
+  </div>
+  <div id="hbBody"></div>
+</div>
 
 <div id="sheet" hidden>
   <div class="sh-bar">
@@ -273,6 +307,41 @@ function drawSheet(){
   const answered = Object.keys(d).length;
   shRes.innerHTML = "已填 " + answered + " / 30";
 }
+/* ====================== 话术手册 ====================== */
+const HANDBOOK = {"title":"中外教育史 · 应急话术","frameworks":[{"k":"①","n":"定位","d":"把人物 / 制度 / 思潮放回历史背景","w":"15%"},{"k":"②","n":"展开","d":"核心主张、制度设计、实践路径（四条线）","w":"40%"},{"k":"③","n":"影响","d":"对教育体系、课程、师生、社会的作用","w":"20%"},{"k":"④","n":"反思","d":"时代局限、理想与现实的落差","w":"15%"},{"k":"⑤","n":"启示","d":"对接当下教育、立德树人、课改","w":"10%"}],"rules":["有锚点就优先锚点：只记得一个专有名词，就放段首当核心，用话术展开","分层填充：每段嵌少量专业术语，不要一次性堆砌","辩证是提分关键：无论考什么，必须写「历史局限 / 内在张力」","控制升华篇幅：当代启示放最后，占 15%-25%，别空谈新课改"],"groups":[{"name":"中国教育史","items":[{"t":"人物","opener":"该教育家是中国教育史上具有标志性意义的代表人物。其教育思想根植于特定的政治、经济与文化环境，既承接前代教育传统，又回应了当时人才培养、社会教化的现实需求，对古代（或近代）的学校、书院、蒙养、科举与国民教育产生了深远影响。","lines":["教育的社会作用：教化安民、移风易俗、培育治世人才；「建国君民，教学为先」","个体发展：性善 / 性恶 / 化性起伪 → 涵养心性、扩充善端；教育是人格自觉","培养目标：君子 / 圣贤 / 大丈夫 / 新民 → 德才兼备、明体达用","教学与为学：启发诱导、循序渐进、学思结合、博约相济；尊师重道、教学相长"],"limit":"受时代社会结构与思想体系制约，其思想常附着于传统伦理秩序，存在「重道轻艺、重德轻技」的倾向，对个体独立价值、实用技艺与科学理性的关注有限。但这不妨碍其核心智慧成为后世的重要思想资源。","rise":"其价值不在提供可机械照搬的方案，而在提醒教育者把握教育的双重使命：既传递文化传统，也促进人格健全；在立德树人、传统文化浸润、启发式教学的今天，仍可汲取本土智慧。","kw":["性善论","性恶论","化性起伪","明人伦","教化安民","化民成俗","君子","圣贤","大丈夫","新民","健全国民","德才兼备","知行合一","启发诱导","循序渐进","温故知新","学思结合","因材施教","躬行践履","重道轻艺"]},{"t":"国家 / 教育制度","opener":"这一时期是中国教育制度发生整合、转型或革新的关键阶段。国家通过调整官学、私学、书院、蒙养与选士制度，建立起服务于人才选拔、文化传承与国家治理的教育架构，深刻塑造了中国传统教育的基本形态。","lines":["官学主干：经学、史学、治世之学为核心；统一培养目标、课程与考核","私学与书院：民间讲学、自由论辩、学术传承；会讲、藏修游息","选士与考试：教育、测评、选拔绑定；促进流动，也形成「以考定学」","基层教化：蒙学、乡约、礼俗 → 「政教合一、以教驭俗」的大教育传统"],"limit":"对内维持了文明延续与人才供给，但考试易教条化、官学易形式化、民间教育受政治与经费约束；对技术、工艺、自然科学重视不足。","rise":"「养士、储才、教化、文治」的传统，为理解公立教育、民间办学、考试评价、文化传承提供了历史镜鉴；当代改革正是在平衡「统一规范与自由探索、选拔与育人」。","kw":["太学","国子学","六学二馆","郡国学","监生历事","私学兴起","百家争鸣","书院会讲","朱陆之辩","察举","征辟","九品中正","科举","糊名誊录","社会流动","政教合一","移风易俗","乡村教化","文治","储才"]},{"t":"法案 / 学制","opener":"该学制（法案）是中国教育现代化进程中的标志性制度成果，标志着我国从传统经学教育向近代制度化教育的关键转型。它借鉴域外经验，同时试图适配救亡图存、培育新式国民、发展近代实业的现实需求。","lines":["体系建构：蒙养 → 初等 → 中等 → 高等分段设学，明确目标、课程与衔接","课程革新：突破经学独大；引入自然科学、社会科学、外国语、手工、博物、理财","师范与实业：师范学堂培养新式教师；实业教育对接农工商","配套制度：教育行政、视学督导、经费管理 → 教育成为现代国家公共事业"],"limit":"受时局动荡、经费不足、地方执行力制约，制度落地出现收缩、变形与形式化；带有明显的外来移植痕迹，域外制度与本土文化之间存在适配难题。","rise":"「分段设学、重视师范、普职并举」的思路深刻影响此后学制演化，为当代基础教育、高等教育、职业教育的协调发展提供参照。","kw":["分段设学","连贯学制","强迫教育","分级管理","学校系统","格致","博物","算学","外国语","实业","手工","科学启蒙","师范学堂","教员养成","实业学堂","农工商","学以致用","学部","视学","制度移植","本土化"]},{"t":"教育思潮","opener":"该教育思潮是近代社会危机与文化转型的产物，集中反映了当时知识分子与教育改革者对「教育应当承担何种社会使命」的重新思考，是中国教育现代性探索中的重要一环。","lines":["反对：空疏、脱离现实的传统教育","主张：教育对接民生、产业、救亡图存与社会改造","核心方向：教育下移——从士绅官僚子弟扩展到工人、农民、妇女、儿童","教学革新：直观、实验、活动、实地调查、合作学习；反对机械记诵"],"limit":"很多方案带理想主义色彩，对资金、师资、基层组织的难度估计不足；借鉴外来理论时易简单移植、脱离本土，实践难以持续。","rise":"最重要的遗产是确立了「教育不能脱离社会」这一基本立场；在今天推进教育公平、乡村振兴、劳动教育、科学普及与社会实践课程时仍可汲取。","kw":["中体西用","师夷长技","西艺","西政","救亡图存","教育下移","乡村建设","生活即教育","社会即学校","教学做合一","经世致用","实证","观察","实验","社会枢纽","底层启蒙","本土化探索"]}]},{"name":"外国教育史","lead":"记住四条主线：儿童观 · 课程观 · 教育权力 · 教育民主化。细节忘了就围绕这四个维度展开。","items":[{"t":"人物","opener":"该教育家是西方教育思想史上承前启后的关键人物。其学说建立在对人性、知识、儿童与社会秩序的理解之上，既回应了当时哲学、科学与社会变革提出的问题，又深刻重塑了后世关于学校、课程、教学与儿童发展的基本观念。","lines":["儿童观：儿童不是「小大人」，有独立发展规律、内在潜能与独特感知方式","教育目的：自由人格、理性启蒙、公民养成、身心和谐","课程与教学：直观、对话、探究、活动、经验改组；反对灌输结论","教师角色：环境的准备者、学习的引导者、思维的对话者"],"limit":"任何理论都带时代预设：有时高估环境塑造作用，有时低估社会结构约束；理想方案与学校日常之间存在落差。","rise":"留给后世的不只是一套教学方案，而是一种以儿童、经验、理性或公共善为中心的教育思维，是现代课程改革、教师专业发展、学习环境设计的思想源头。","kw":["自然成长","内在潜能","儿童本位","敏感期","游戏价值","主动建构","自由人格","理性启蒙","公民养成","身心和谐","公共精神","直观教学","产婆术","泛智","经验改组","环境准备","教育民主"]},{"t":"国家 / 教育体系","opener":"该国教育体系是在特定的政治传统、宗教文化、经济结构与民族诉求中逐步形成的，体现了国家、教会、地方、市场与民间力量之间对教育权力的分配，对世界范围内的学校制度、师范体系、高等教育与职业教育产生了重要影响。","lines":["核心矛盾：教育治理——中央统筹 / 地方自治 / 教会 / 行业主导","转型：精英教育 → 大众教育；学术轨道与职业轨道并行","民主化：综合中学、统一学制、延缓分流 → 协调公平与效率","高等教育：学术自由、教学与科研统一、大学服务社会"],"limit":"中央调控与地方活力、学术精英与大众普及、普通教育与职业准备之间的平衡难题；追求效率时易忽视弱势群体、文化差异与个体多样性。","rise":"不存在唯一「最优」模式；成熟的改革要兼顾国家发展、个体成长、社会公平与文化传承。","kw":["国家垄断","地方自治","教会控制","分权制衡","公共教育","双轨制","综合中学","学术轨道","职业轨道","教育民主化","学术自由","洪堡传统","威斯康星理念","研究生院","服务社会","师范学校","教师资格","临床实践"]},{"t":"法案","opener":"该法案是该国教育现代化中的标志性立法，以法律形式确立教育目标、管理体制、经费保障、课程方向与受教育权利，推动教育从地方、教会或私人事务转变为现代国家的公共事业。","lines":["义务教育：普及、免费、强制；读写算与公民常识","分流调整：不同类型中学、技术学校、职业训练 → 协调学术、技术与劳动力培养","国家调控：专项拨款、督导评估、课程框架、质量标准","教育公平：对弱势群体、欠发达地区补偿"],"limit":"法案只是框架，效果取决于经费、师资、社区支持、文化观念；易「重形式、轻实践」；为短期战略目标牺牲课程均衡与学生完整发展。","rise":"把受教育权、教育质量与教育公平纳入公共治理议程，为教育法治、教育财政、教育评估与均衡发展奠基。","kw":["免费","强迫","初等普及","消除文盲","公民素养","职业预备","中央补助","督导","质量标准","弱势群体补偿","教育公平","制度定型","战略导向","执行落差","现代教育法治"]},{"t":"教育思潮","opener":"该教育思潮是对当时教育危机的回应，集中体现哲学、心理学、科学与社会变革对教育的冲击。它通过重新讨论教育目的、课程内容、师生关系与学校组织，推动教育实践发生整体性调整。","lines":["共同批判：机械记诵、权威压制、脱离生活、忽视儿童","重心转移：从「传递固定知识」→「促进人的整体发展」","心理学基础：发展阶段、认知结构、学习动机、经验迁移、社会互动","根本分歧：学校应传递文化、发展个体，还是推动社会重建？"],"limit":"每种思潮都有「矫正偏向」：纠偏容易走向另一个极端——强调自由弱化基础训练、强调结构忽视经验兴趣、强调社会改造弱化文化传承。","rise":"争论不是「对错」，而是在回答教育的永恒命题：培养什么样的人，如何在文化传承、个体自由与社会发展之间取得平衡。","kw":["人文主义","古典复兴","自由教育","自然主义","进步教育","新教育","活动课程","经验学习","社会重建","要素主义","永恒主义","文化传承","基础训练","心智陶冶","发现学习","学科结构","终身学习"]}]}]};
+function renderHB(){
+  const hb = HANDBOOK;
+  let html = '<div class="hb-fr"><h4>五段骨架</h4>';
+  hb.frameworks.forEach(f => {
+    html += `<div class="row"><b>${f.k}</b><span>${f.n}｜${f.d}</span><i>${f.w}</i></div>`;
+  });
+  html += '</div><div class="hb-fr"><h4>四条原则</h4>';
+  hb.rules.forEach(r => { html += `<div class="hb-rule">${r}</div>`; });
+  html += '</div>';
+  hb.groups.forEach(g => {
+    html += `<div class="hb-g">${g.name}</div>`;
+    if (g.lead) html += `<div class="hb-fr" style="font-size:13px;color:var(--ink2);line-height:1.7">${g.lead}</div>`;
+    g.items.forEach((it, idx) => {
+      const id = g.name + '-' + idx;
+      html += `<div class="hb-item" data-id="${id}">
+        <div class="h"><span>${it.t}</span><span class="ar">▸</span></div>
+        <div class="b">
+          <div class="hb-sec"><span class="lb">① 定位句</span>${it.opener}</div>
+          <div class="hb-sec"><span class="lb">② 展开 · 四条线</span>${it.lines.map(l => '· ' + l).join('<br>')}</div>
+          <div class="hb-sec"><span class="lb">③ 局限（提分关键）</span>${it.limit}</div>
+          <div class="hb-sec"><span class="lb">④ 当代升华</span>${it.rise}</div>
+          <div class="hb-kws">${it.kw.map(k => `<span>${k}</span>`).join('')}</div>
+        </div></div>`;
+    });
+  });
+  $("hbBody").innerHTML = html;
+  $("hbBody").querySelectorAll('.hb-item>.h').forEach(h => {
+    h.onclick = () => h.parentElement.classList.toggle('open');
+  });
+}
+$("btnHB").onclick = () => { $("hb").hidden = false; if (!$("hbBody").innerHTML) renderHB(); };
+$("hbClose").onclick = () => { $("hb").hidden = true; };
+
 $("btnSheet").onclick = () => { sheetEl.hidden = false; drawSheet(); };
 $("shClose").onclick = () => { sheetEl.hidden = true; };
 $("shGrade").onclick = () => {
